@@ -20,7 +20,7 @@ function Header(){
             <div className="header-right">
                 {/* <img className='avatar-img' src="/" alt="avatar-img" /> */}
                 <div className='user-icon'>
-                    <i class="fa-solid fa-user"></i>
+                    <i className="fa-solid fa-user"></i>
                 </div>
                 <button className='login-btn'>Login</button>
             </div>
