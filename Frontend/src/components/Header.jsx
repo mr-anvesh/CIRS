@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import './header.css';
 
 function Header(){
@@ -11,18 +12,19 @@ function Header(){
                 <h1 id="header-title">CIRS</h1>
             </div>
             <nav className='header-nav'>
-                <a href="home" className='nav-link'>Home</a>
-                <a href="about" className='nav-link'>About</a>
-                <a href="faqs" className='nav-link'>FAQs</a>
-                <a href="contact" className='nav-link'>Contact</a>
+                <Link to="/" className='nav-link'>Home</Link>
+                <Link to="/dashboard" className='nav-link'>Dashboard</Link>
+                <Link to="/about" className='nav-link'>About</Link>
+                <Link to="/faqs" className='nav-link'>FAQs</Link>
+                <Link to="/contact" className='nav-link'>Contact</Link>
             </nav>
 
             <div className="header-right">
                 {/* <img className='avatar-img' src="/" alt="avatar-img" /> */}
                 <div className='user-icon'>
-                    <i class="fa-solid fa-user"></i>
+                    <i className="fa-solid fa-user"></i>
                 </div>
-                <button className='login-btn'>Login</button>
+                <Link to="/login" className='login-btn'>Login</Link>
             </div>
 
         </header>
