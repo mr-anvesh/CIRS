@@ -1,16 +1,47 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 import './Login.css';
 import campusImage from '../assets/campus.jpg';
 
 function Login() {
   const [activeTab, setActiveTab] = useState('login');
+  const { login, register } = useAuth();
+  const navigate = useNavigate();
 
-  function loginController() {
-    setActiveTab('login');
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    universityID: '',
+    password: '',
+    confirmPassword: ''
+  });
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  async function handleLogin(e) {
+    e.preventDefault();
+    try {
+      await login(formData.email, formData.password);
+      navigate('/dashboard'); 
+    } catch (error) {
+      alert(error.response?.data?.message || 'Login failed');
+    }
   }
 
-  function signupController() {
-    setActiveTab('signup');
+  async function handleSignup(e) {
+    e.preventDefault();
+    if (formData.password !== formData.confirmPassword) {
+      return alert("Passwords don't match!");
+    }
+    try {
+      await register(formData);
+      navigate('/dashboard');
+    } catch (error) {
+      alert(error.response?.data?.message || 'Registration failed');
+    }
   }
 
   return (
@@ -51,14 +82,14 @@ function Login() {
             <button
               className={activeTab === 'login' ? 'tab active' : 'tab'}
               type="button"
-              onClick={loginController}
+              onClick={() => setActiveTab('login')}
             >
               Login
             </button>
             <button
               className={activeTab === 'signup' ? 'tab active' : 'tab'}
               type="button"
-              onClick={signupController}
+              onClick={() => setActiveTab('signup')}
             >
               Sign Up
             </button>
@@ -69,11 +100,18 @@ function Login() {
               <h2>Welcome Back</h2>
               <p className="sub">Enter your credentials to access your dashboard.</p>
 
-              <form className="login-form" onSubmit={(e) => e.preventDefault()}>
-                <label>University ID or Email</label>
+              <form className="login-form" onSubmit={handleLogin}>
+                <label>University Email</label>
                 <div className="input-wrap">
                   <i className="fa-solid fa-user"></i>
-                  <input type="text" placeholder="e.g. 100456789 or name@uni.edu" />
+                  <input 
+                    type="email" 
+                    name="email"
+                    placeholder="EnrollmentNo@uni.edu.in or email" 
+                    value={formData.email}
+                    onChange={handleChange}
+                    required
+                  />
                 </div>
 
                 <div className="label-row">
@@ -83,13 +121,15 @@ function Login() {
 
                 <div className="input-wrap">
                   <i className="fa-solid fa-lock"></i>
-                  <input type="password" placeholder="••••••••" />
+                  <input 
+                    type="password" 
+                    name="password"
+                    placeholder="••••••••" 
+                    value={formData.password}
+                    onChange={handleChange}
+                    required
+                  />
                 </div>
-
-                <label className="remember">
-                  <input type="checkbox" />
-                  <span>Remember me on this device</span>
-                </label>
 
                 <button className="login-submit" type="submit">
                   Login
@@ -102,41 +142,71 @@ function Login() {
               <h2>Create Account</h2>
               <p className="sub">Register with your university credentials.</p>
 
-              <form className="login-form" onSubmit={(e) => e.preventDefault()}>
+              <form className="login-form" onSubmit={handleSignup}>
                 <label>Full Name</label>
                 <div className="input-wrap">
                   <i className="fa-solid fa-user"></i>
-                  <input type="text" placeholder="Alex Johnson" />
+                  <input 
+                    type="text" 
+                    name="name"
+                    placeholder="Alex Johnson" 
+                    value={formData.name}
+                    onChange={handleChange}
+                    required
+                  />
                 </div>
 
                 <label>University Email</label>
                 <div className="input-wrap">
                   <i className="fa-solid fa-envelope"></i>
-                  <input type="email" placeholder="name@uni.edu" />
+                  <input 
+                    type="email" 
+                    name="email"
+                    placeholder="name@uni.edu" 
+                    value={formData.email}
+                    onChange={handleChange}
+                    required
+                  />
                 </div>
 
                 <label>University ID</label>
                 <div className="input-wrap">
                   <i className="fa-solid fa-id-card"></i>
-                  <input type="text" placeholder="100456789" />
+                  <input 
+                    type="text" 
+                    name="universityID"
+                    placeholder="100456789" 
+                    value={formData.universityID}
+                    onChange={handleChange}
+                    required
+                  />
                 </div>
 
                 <label>Password</label>
                 <div className="input-wrap">
                   <i className="fa-solid fa-lock"></i>
-                  <input type="password" placeholder="Create a password" />
+                  <input 
+                    type="password" 
+                    name="password"
+                    placeholder="Create a password" 
+                    value={formData.password}
+                    onChange={handleChange}
+                    required
+                  />
                 </div>
 
                 <label>Confirm Password</label>
                 <div className="input-wrap">
                   <i className="fa-solid fa-lock"></i>
-                  <input type="password" placeholder="Confirm password" />
+                  <input 
+                    type="password" 
+                    name="confirmPassword"
+                    placeholder="Confirm password" 
+                    value={formData.confirmPassword}
+                    onChange={handleChange}
+                    required
+                  />
                 </div>
-
-                <label className="remember">
-                  <input type="checkbox" />
-                  <span>I agree to Terms and Privacy Policy</span>
-                </label>
 
                 <button className="login-submit" type="submit">
                   Sign Up
