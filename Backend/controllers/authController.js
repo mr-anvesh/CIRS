@@ -21,6 +21,9 @@ exports.registerUser = async (req,res)=>{
             user : {id: user._id, name: user.name, email: user.email, role: user.role, university: user.university}
         });
     }catch(error){
+        if (error.code === 11000) {
+            return res.status(400).json({ message: 'User already exists' });
+        }
         res.status(500).json({message: error.message});
     }
 };
@@ -42,5 +45,24 @@ exports.registerUser = async (req,res)=>{
     }
     catch(error){
         res.status(500).json({message: error.message});
+    }
+};
+
+exports.getUniversityUsers = async (req, res) => {
+    try {
+        if (req.user.role !== 'admin') {
+            return res.status(403).json({ message: 'Only admins can access users list' });
+        }
+
+        const university = req.user.university || getUniversityFromEmail(req.user.email);
+
+        const users = await User.find({ university })
+            .select('name email role university createdAt')
+            .sort({ createdAt: -1 });
+
+        return res.json(users);
+    }
+    catch (error) {
+        return res.status(500).json({ message: error.message });
     }
 };

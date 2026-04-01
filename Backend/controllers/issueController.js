@@ -37,8 +37,6 @@ exports.getIssues = async (req,res)=>{
         if (req.user.role === 'admin' || req.user.role === 'maintenance') {
             const university = req.user.university || getUniversityFromEmail(req.user.email);
 
-            const domainRegex = new RegExp(`@${university.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`, 'i');
-
             const issues = await Issue.find({
                 $or: [
                     { university },
@@ -47,7 +45,7 @@ exports.getIssues = async (req,res)=>{
                     { university: '' }
                 ]
             })
-                .populate({ path: 'user', select: 'name email role', match: { email: domainRegex } })
+                .populate({ path: 'user', select: 'name email role' })
                 .sort({ createdAt: -1 });
 
             const filteredIssues = issues.filter((issue) => {
@@ -55,7 +53,11 @@ exports.getIssues = async (req,res)=>{
                     return issue.university === university;
                 }
 
-                return Boolean(issue.user);
+                if (!issue.user?.email) {
+                    return false;
+                }
+
+                return getUniversityFromEmail(issue.user.email) === university;
             });
 
             return res.json(filteredIssues);
