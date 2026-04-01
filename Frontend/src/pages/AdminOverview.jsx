@@ -41,7 +41,7 @@ function AdminOverview() {
         <div>
           <h1 className="dashboard-title">Admin Dashboard</h1>
           <p className="dashboard-subtitle">
-            Welcome back, {user?.name || 'Admin'}. Here&apos;s what&apos;s happening on campus today.
+            Welcome back, {user?.name || 'Admin'}. Showing all reports for {user?.university || 'your university'}.
           </p>
         </div>
         <button className="report-btn" onClick={() => setIsModalOpen(true)}>
@@ -99,6 +99,7 @@ function AdminOverview() {
                 <th>REPORT ID</th>
                 <th>ISSUE TITLE</th>
                 <th>CATEGORY</th>
+                <th>DEPARTMENT</th>
                 <th>LOCATION</th>
                 <th>DATE SUBMITTED</th>
                 <th>STATUS</th>
@@ -111,6 +112,7 @@ function AdminOverview() {
                   <td>#{issue._id.slice(-6).toUpperCase()}</td>
                   <td>{issue.title}</td>
                   <td>{issue.category}</td>
+                  <td>{issue.department}</td>
                   <td>{issue.location}</td>
                   <td>{new Date(issue.createdAt).toLocaleDateString()}</td>
                   <td>

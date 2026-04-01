@@ -36,7 +36,7 @@ function App() {
         <Route path="/dashboard" element={<ProtectedRoutes><Dashboard /></ProtectedRoutes>} />
         <Route
           path="/admin-dashboard"
-          element={<ProtectedRoutes><AdminDashboard /></ProtectedRoutes>}
+          element={<ProtectedRoutes allowedRoles={['admin']}><AdminDashboard /></ProtectedRoutes>}
         >
           <Route index element={<AdminOverview />} />
           <Route path="analytics" element={<AdminAnalytics />} />
