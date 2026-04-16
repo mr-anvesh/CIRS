@@ -62,12 +62,18 @@ function AdminIssueLogs() {
                   <th>LOCATION</th>
                   <th>STATUS</th>
                   <th>DATE</th>
-                  <th>ACTION</th>
                 </tr>
               </thead>
               <tbody>
                 {filteredIssues.map((issue) => (
-                  <tr key={issue._id}>
+                  <tr
+                    key={issue._id}
+                    className="issue-row-clickable"
+                    onClick={() => {
+                      setSelectedIssue(issue);
+                      setIsDetailOpen(true);
+                    }}
+                  >
                     <td>#{issue._id.slice(-6).toUpperCase()}</td>
                     <td>{issue.title}</td>
                     <td>{issue.category}</td>
@@ -79,17 +85,6 @@ function AdminIssueLogs() {
                       </span>
                     </td>
                     <td>{new Date(issue.createdAt).toLocaleDateString()}</td>
-                    <td>
-                      <button
-                        className="action-btn"
-                        onClick={() => {
-                          setSelectedIssue(issue);
-                          setIsDetailOpen(true);
-                        }}
-                      >
-                        <i className="fa-solid fa-eye"></i>
-                      </button>
-                    </td>
                   </tr>
                 ))}
               </tbody>

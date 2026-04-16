@@ -9,6 +9,9 @@ import IssueDetailModal from '../components/IssueDetailModal';
 function AdminOverview() {
   const { user } = useAuth();
   const [issues, setIssues] = useState([]);
+  const [workers, setWorkers] = useState([]);
+  const [selectedWorkers, setSelectedWorkers] = useState({});
+  const [assigningIssueId, setAssigningIssueId] = useState('');
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedIssue, setSelectedIssue] = useState(null);
@@ -16,12 +19,32 @@ function AdminOverview() {
 
   const fetchIssues = async () => {
     try {
-      const { data } = await API.get('/issues');
-      setIssues(data);
+      const [{ data: issueData }, { data: userData }] = await Promise.all([
+        API.get('/issues'),
+        API.get('/auth/users'),
+      ]);
+
+      setIssues(issueData);
+      setWorkers(userData.filter((u) => u.role === 'maintenance'));
     } catch (error) {
       console.error('Failed to fetch issues', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleAssign = async (issueId) => {
+    const workerId = selectedWorkers[issueId];
+    if (!workerId) return;
+
+    try {
+      setAssigningIssueId(issueId);
+      const { data } = await API.put(`/issues/${issueId}/assign`, { workerId });
+      setIssues((prev) => prev.map((issue) => (issue._id === issueId ? data : issue)));
+    } catch (error) {
+      console.error('Failed to assign worker', error);
+    } finally {
+      setAssigningIssueId('');
     }
   };
 
@@ -108,7 +131,14 @@ function AdminOverview() {
             </thead>
             <tbody>
               {issues.map((issue) => (
-                <tr key={issue._id}>
+                <tr
+                  key={issue._id}
+                  className="issue-row-clickable"
+                  onClick={() => {
+                    setSelectedIssue(issue);
+                    setIsDetailOpen(true);
+                  }}
+                >
                   <td>#{issue._id.slice(-6).toUpperCase()}</td>
                   <td>{issue.title}</td>
                   <td>{issue.category}</td>
@@ -121,15 +151,32 @@ function AdminOverview() {
                     </span>
                   </td>
                   <td>
-                    <button
-                      className="action-btn"
-                      onClick={() => {
-                        setSelectedIssue(issue);
-                        setIsDetailOpen(true);
-                      }}
-                    >
-                      <i className="fa-solid fa-eye"></i>
-                    </button>
+                    <div className="assign-cell" onClick={(e) => e.stopPropagation()}>
+                      <select
+                        className="table-select"
+                        value={selectedWorkers[issue._id] || issue.assignedTo?._id || ''}
+                        onChange={(e) =>
+                          setSelectedWorkers((prev) => ({
+                            ...prev,
+                            [issue._id]: e.target.value,
+                          }))
+                        }
+                      >
+                        <option value="">Select worker</option>
+                        {workers.map((worker) => (
+                          <option key={worker._id} value={worker._id}>
+                            {worker.name}
+                          </option>
+                        ))}
+                      </select>
+                      <button
+                        className="assign-btn"
+                        onClick={() => handleAssign(issue._id)}
+                        disabled={!selectedWorkers[issue._id] || assigningIssueId === issue._id}
+                      >
+                        {assigningIssueId === issue._id ? 'Assigning...' : 'Assign'}
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}
