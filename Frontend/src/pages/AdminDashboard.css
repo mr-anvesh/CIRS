@@ -203,6 +203,14 @@
   border-bottom: 1px solid #f5f5f5;
 }
 
+.issue-row-clickable {
+  cursor: pointer;
+}
+
+.issue-row-clickable:hover {
+  background: #f7f9fc;
+}
+
 /* Status Badges */
 .badge {
   display: inline-block;
@@ -245,6 +253,36 @@
   background: #3b4c7c;
   color: #fff;
   border-color: #3b4c7c;
+}
+
+.assign-cell {
+  display: flex;
+  gap: 0.4rem;
+  align-items: center;
+}
+
+.table-select {
+  border: 1px solid #d8dce7;
+  border-radius: 6px;
+  padding: 0.3rem 0.4rem;
+  font-size: 0.75rem;
+  color: #334;
+  background: #fff;
+}
+
+.assign-btn {
+  border: 1px solid #3b4c7c;
+  background: #3b4c7c;
+  color: #fff;
+  border-radius: 6px;
+  padding: 0.3rem 0.55rem;
+  font-size: 0.72rem;
+  cursor: pointer;
+}
+
+.assign-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
 }
 
 /* --- Bottom Row --- */

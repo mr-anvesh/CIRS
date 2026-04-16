@@ -1,4 +1,5 @@
 const Issue = require('../models/Issue');
+const User = require('../models/User');
 const { getUniversityFromEmail } = require('../utils/university');
 
 exports.createIssue = async (req,res)=>{
@@ -46,6 +47,7 @@ exports.getIssues = async (req,res)=>{
                 ]
             })
                 .populate({ path: 'user', select: 'name email role' })
+                .populate({ path: 'assignedTo', select: 'name email role university' })
                 .sort({ createdAt: -1 });
 
             const filteredIssues = issues.filter((issue) => {
@@ -68,5 +70,58 @@ exports.getIssues = async (req,res)=>{
     }
     catch(error){
         res.status(500).json({message: error.message});
+    }
+};
+
+exports.assignWorker = async (req, res) => {
+    try {
+        if (req.user.role !== 'admin') {
+            return res.status(403).json({ message: 'Only admins can assign workers' });
+        }
+
+        const { workerId } = req.body;
+        if (!workerId) {
+            return res.status(400).json({ message: 'workerId is required' });
+        }
+
+        const university = req.user.university || getUniversityFromEmail(req.user.email);
+
+        const [issue, worker] = await Promise.all([
+            Issue.findById(req.params.id),
+            User.findById(workerId)
+        ]);
+
+        if (!issue) {
+            return res.status(404).json({ message: 'Issue not found' });
+        }
+
+        const issueUniversity = issue.university || (issue.user?.email ? getUniversityFromEmail(issue.user.email) : null);
+        if (issueUniversity !== university) {
+            return res.status(403).json({ message: 'You can only assign tickets in your organisation' });
+        }
+
+        if (!worker || worker.role !== 'maintenance') {
+            return res.status(400).json({ message: 'Invalid worker' });
+        }
+
+        const workerUniversity = worker.university || getUniversityFromEmail(worker.email);
+        if (workerUniversity !== university) {
+            return res.status(403).json({ message: 'Worker must belong to your organisation' });
+        }
+
+        issue.assignedTo = worker._id;
+        if (issue.status === 'Pending') {
+            issue.status = 'In-Progress';
+        }
+        await issue.save();
+
+        const updatedIssue = await Issue.findById(issue._id)
+            .populate({ path: 'user', select: 'name email role' })
+            .populate({ path: 'assignedTo', select: 'name email role university' });
+
+        return res.json(updatedIssue);
+    }
+    catch (error) {
+        return res.status(500).json({ message: error.message });
     }
 };
