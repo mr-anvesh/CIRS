@@ -11,6 +11,8 @@ function Header() {
         navigate('/login');
     };
 
+    const dashboardPath = user?.role === 'admin' ? '/admin-dashboard' : "/dashboard";
+
     return (
         <header className="header">
             <div className="header-left">
@@ -22,7 +24,7 @@ function Header() {
             
             <nav className='header-nav'>
                 <Link to="/" className='nav-link'>Home</Link>
-                <Link to="/dashboard" className='nav-link'>Dashboard</Link>
+                <Link to={dashboardPath} className='nav-link'>Dashboard</Link>
                 <Link to="/about" className='nav-link'>About</Link>
                 <Link to="/faqs" className='nav-link'>FAQs</Link>
                 <Link to="/contact" className='nav-link'>Contact</Link>

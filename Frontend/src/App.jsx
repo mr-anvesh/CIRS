@@ -33,7 +33,7 @@ function App() {
       <Header />
       <Routes>
         <Route path="/" element={<HomePage />} />
-        <Route path="/dashboard" element={<ProtectedRoutes><Dashboard /></ProtectedRoutes>} />
+        <Route path="/dashboard" element={<ProtectedRoutes allowedRoles = {['student']}><Dashboard /></ProtectedRoutes>} />
         <Route
           path="/admin-dashboard"
           element={<ProtectedRoutes allowedRoles={['admin']}><AdminDashboard /></ProtectedRoutes>}
