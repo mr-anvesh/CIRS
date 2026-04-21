@@ -227,24 +227,35 @@ exports.getIssues = async (req, res) => {
 //update issue status function 
 exports.updateIssueStatus = async (req, res) => {
   try {
-    if (req.user.role !== 'maintenance') {
-      return res.status(403).json({ message: 'Only maintenance staff can update status' });
-    }
-
     const { status } = req.body;
-    const allowedStatuses = ['In-Progress', 'Resolved'];
+        const allowedStatuses = ['In-Progress', 'Resolved'];
 
     if (!allowedStatuses.includes(status)) {
       return res.status(400).json({ message: 'Invalid status' });
     }
+
+        if (!['maintenance', 'admin'].includes(req.user.role)) {
+            return res.status(403).json({ message: 'Not authorized to update status' });
+        }
+
+        if (req.user.role === 'admin' && status !== 'Resolved') {
+            return res.status(403).json({ message: 'Admins can only close tickets' });
+        }
 
     const issue = await Issue.findById(req.params.id);
     if (!issue) {
       return res.status(404).json({ message: 'Issue not found' });
     }
 
-    if (!issue.assignedTo || issue.assignedTo.toString() !== req.user._id.toString()) {
-      return res.status(403).json({ message: 'You can update only issues assigned to you' });
+        const university = req.user.university || getUniversityFromEmail(req.user.email);
+        if (issue.university !== university) {
+            return res.status(403).json({ message: 'You can only update tickets in your organisation' });
+        }
+
+        if (req.user.role === 'maintenance') {
+            if (!issue.assignedTo || issue.assignedTo.toString() !== req.user._id.toString()) {
+                return res.status(403).json({ message: 'You can update only issues assigned to you' });
+            }
     }
 
     issue.status = status;
