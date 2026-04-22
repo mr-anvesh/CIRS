@@ -76,7 +76,9 @@ const IssueDetailModal = ({ isOpen, onClose, issue }) => {
                                 <div className="detail-row">
                                     <span className="detail-label">Reported Issue Image (Student)</span>
                                     <div className="detail-value">
-                                        <img src={issue.issueImage} alt="Issue reported" style={{ maxWidth: '100%', maxHeight: '200px', borderRadius: '8px', marginTop: '5px' }} />
+                                        <a href={issue.issueImage} target="_blank" rel="noopener noreferrer">
+                                            <img src={issue.issueImage} alt="Issue reported" style={{ maxWidth: '100%', maxHeight: '200px', borderRadius: '8px', marginTop: '5px', cursor: 'pointer' }} />
+                                        </a>
                                     </div>
                                 </div>
                             )}
@@ -84,7 +86,9 @@ const IssueDetailModal = ({ isOpen, onClose, issue }) => {
                                 <div className="detail-row">
                                     <span className="detail-label">Resolution Image (Staff)</span>
                                     <div className="detail-value">
-                                        <img src={issue.resolutionImage} alt="Resolution" style={{ maxWidth: '100%', maxHeight: '200px', borderRadius: '8px', marginTop: '5px' }} />
+                                        <a href={issue.resolutionImage} target="_blank" rel="noopener noreferrer">
+                                            <img src={issue.resolutionImage} alt="Resolution" style={{ maxWidth: '100%', maxHeight: '200px', borderRadius: '8px', marginTop: '5px', cursor: 'pointer' }} />
+                                        </a>
                                     </div>
                                 </div>
                             )}
