@@ -14,14 +14,19 @@
 
 .modal-content {
     background: white;
-    padding: 30px;
+    padding: 24px 30px;
     border-radius: 12px;
     width: 90%;
     max-width: 500px;
-    max-height: 90vh;
-    overflow-y: auto;
+    max-height: 85vh;
+    display: flex;
+    flex-direction: column;
     box-shadow: 0 10px 40px rgba(0,0,0,0.2);
     animation: slideIn 0.3s ease-out;
+}
+
+.modal-header, .modal-sub {
+    flex-shrink: 0;
 }
 
 @keyframes slideIn {
@@ -47,6 +52,12 @@
     color: #666;
     font-size: 14px;
     margin-bottom: 20px;
+}
+
+.report-form {
+    flex-grow: 1;
+    overflow-y: auto;
+    padding-right: 5px;
 }
 
 .report-form label {
